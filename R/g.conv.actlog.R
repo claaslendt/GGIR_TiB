@@ -23,6 +23,8 @@ g.conv.actlog = function(qwindow, qwindow_dateformat="%d-%m-%Y", epochSize = 5) 
   
   # Read content of activity diary file
   actlog = data.table::fread(file = qwindow, data.table = FALSE)
+  datecols = grep("date", colnames(actlog), ignore.case = TRUE)
+  actlog[, datecols] = apply(X = actlog[, datecols], MARGIN = 2, FUN = as.character)
   
   # check ID and date cols in actlog
   actlog = check_log(actlog, dateformat = qwindow_dateformat,
@@ -31,7 +33,7 @@ g.conv.actlog = function(qwindow, qwindow_dateformat="%d-%m-%Y", epochSize = 5) 
   
   # find dates
   actlog_vec = unlist(actlog) # turn into vector
-  actlog_vec = sapply(actlog_vec, function(x) !all(is.na(as.Date(as.character(x),format=qwindow_dateformat))))
+  actlog_vec = sapply(actlog_vec, function(x) !all(is.na(as.Date(as.character(x),format = qwindow_dateformat))))
   exampledates = unlist(actlog)[which(actlog_vec == TRUE)]
   Ndates = length(which(actlog_vec == TRUE))
   dim(actlog_vec) = c(nrow(actlog),ncol(actlog))
