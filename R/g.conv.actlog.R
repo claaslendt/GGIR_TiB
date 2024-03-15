@@ -24,7 +24,11 @@ g.conv.actlog = function(qwindow, qwindow_dateformat="%d-%m-%Y", epochSize = 5) 
   # Read content of activity diary file
   actlog = data.table::fread(file = qwindow, data.table = FALSE)
   datecols = grep("date", colnames(actlog), ignore.case = TRUE)
-  actlog[, datecols] = apply(X = actlog[, datecols], MARGIN = 2, FUN = as.character)
+  if (length(datecols) > 1) {
+    actlog[, datecols] = apply(X = actlog[, datecols], MARGIN = 2, FUN = as.character)
+  } else if (length(datecols) == 1) {
+    actlog[, datecols] = as.character(actlog[, datecols])
+  }
   
   # check ID and date cols in actlog
   actlog = check_log(actlog, dateformat = qwindow_dateformat,
