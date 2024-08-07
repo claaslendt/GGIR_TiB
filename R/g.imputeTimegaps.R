@@ -127,11 +127,11 @@ g.imputeTimegaps = function(x, sf, k=0.25, impute = TRUE,
           for (i in gap90i) { 
             imp = imp + 1
             # short epochs to add to fill up to next long epoch cut
-            seconds = data.table::hour(x$time[i]) * 60^2 + data.table::minute(x$time[i]) * 60 + data.table::second(x$time[i]) + 1 
+            seconds = data.table::hour(as.POSIXct(x$time[i], origin = "1970")) * 60^2 + data.table::minute(x$time[i]) * 60 + data.table::second(x$time[i]) + 1 
             seconds_from_prevCut = seconds - max(longEpochDayCut[which(longEpochDayCut <= seconds)])
             shortEpochs2add_1 = (longEpochSize - seconds_from_prevCut) / shortEpochSize
             # short epochs to add after time gap
-            seconds = data.table::hour(x$time[i + 1]) * 60^2 + data.table::minute(x$time[i + 1]) * 60 + data.table::second(x$time[i + 1]) + 1 
+            seconds = data.table::hour(as.POSIXct(x$time[i + 1], origin = "1970")) * 60^2 + data.table::minute(x$time[i + 1]) * 60 + data.table::second(x$time[i + 1]) + 1 
             seconds_from_prevCut = seconds - max(longEpochDayCut[which(longEpochDayCut <= seconds)])
             shortEpochs2add_2 = (seconds_from_prevCut - 1) / shortEpochSize
             # short epochs to add - total
