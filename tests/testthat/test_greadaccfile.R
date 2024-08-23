@@ -296,8 +296,8 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
   csv_read4 = g.readaccfile(testfile, blocksize = 10, blocknumber = 2, filequality = filequality,
                             dayborder = dayborder, ws = 3, desiredtz = desiredtz, configtz = configtz,
                             PreviousEndPage = csv_read2$endpage, inspectfileobject = AHcsv,
-                            rmc.dec=".", rmc.sf=30, rmc.unit.time="POSIX",
-                            rmc.firstrow.acc = 2, rmc.firstrow.header=c(),
+                            rmc.dec = ".", rmc.sf = 30, rmc.unit.time = "POSIX", 
+                            rmc.firstrow.acc = 2, rmc.firstrow.header = c(), 
                             rmc.col.acc = c(1,3,4), rmc.col.temp = 5, rmc.col.time=2,
                             rmc.unit.acc = "g", rmc.unit.temp = "C", rmc.origin = "1970-01-01")
   
@@ -309,8 +309,8 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
   
   N = 6000
   sf = 30
-  x = Sys.time()+((0:(N-1))/sf)
-  timestamps = as.POSIXlt(x, origin="1970-1-1", tz = configtz)
+  x = Sys.time() + ((0:(N - 1)) / sf)
+  timestamps = as.POSIXlt(x, origin = "1970-1-1", tz = configtz)
   mydata = data.frame(Xcol = rnorm(N), timecol = timestamps, Ycol = rnorm(N), Zcol = rnorm(N))
   S1 = as.matrix(mydata)
   
@@ -351,16 +351,16 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
     # check that for a file whose header doesn't specify sampling rate,
     # g.inspectfile() errors out if sampling rate is not specified as rmc.sf, or if rmc.sf==0
     expect_error(g.inspectfile(csvData[[1]],
-                               rmc.dec=".", rmc.unit.time="POSIX",
+                               rmc.dec = ".", rmc.unit.time = "POSIX", 
                                rmc.firstrow.acc = 11, rmc.firstrow.header = 1,
-                               rmc.col.acc = c(1,3,4), rmc.col.time=2,
+                               rmc.col.acc = c(1, 3, 4), rmc.col.time = 2, 
                                rmc.unit.acc = "g", rmc.origin = "1970-01-01",
                                rmc.header.structure = csvData[[2]]),
                  regexp = "File header doesn't specify sample rate. Please provide rmc.sf value to process")
     expect_error(g.inspectfile(csvData[[1]],
-                               rmc.dec=".", rmc.sf = 0, rmc.unit.time="POSIX",
+                               rmc.dec = ".", rmc.sf = 0, rmc.unit.time = "POSIX", 
                                rmc.firstrow.acc = 11, rmc.firstrow.header = 1,
-                               rmc.col.acc = c(1,3,4), rmc.col.time=2,
+                               rmc.col.acc = c(1, 3, 4), rmc.col.time = 2, 
                                rmc.unit.acc = "g", rmc.origin = "1970-01-01",
                                rmc.header.structure = csvData[[2]]),
                  regexp = "File header doesn't specify sample rate. Please provide a non-zero rmc.sf value to process")
@@ -368,9 +368,9 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
     # check that for a file whose header doesn't specify sampling rate,
     # g.inspectfile() returns sf == rmc.sf if the latter was specified
     I = g.inspectfile(csvData[[1]],
-                      rmc.dec=".", rmc.sf = 80, rmc.unit.time="POSIX",
+                      rmc.dec = ".", rmc.sf = 80, rmc.unit.time = "POSIX", 
                       rmc.firstrow.acc = 11, rmc.firstrow.header = 1,
-                      rmc.col.acc = c(1,3,4), rmc.col.time=2,
+                      rmc.col.acc = c(1, 3, 4), rmc.col.time = 2, 
                       rmc.unit.acc = "g", rmc.origin = "1970-01-01",
                       rmc.header.structure = csvData[[2]])
     expect_equal(I$sf, 80)
@@ -415,10 +415,10 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
                        list(testfile_two_col, c()))) {
     # check that g.inspectfile() returns sf value that was specified in the header, even if rmc.sf was also specified
     I = g.inspectfile(csvData[[1]],
-                      rmc.dec=".", rmc.sf = 80, rmc.headername.sf = "sample_freq",
-                      rmc.unit.time="POSIX",
-                      rmc.firstrow.acc = 11, rmc.firstrow.header=1,
-                      rmc.col.acc = c(1,3,4), rmc.col.time=2,
+                      rmc.dec = ".", rmc.sf = 80, rmc.headername.sf = "sample_freq", 
+                      rmc.unit.time = "POSIX", 
+                      rmc.firstrow.acc = 11, rmc.firstrow.header = 1, 
+                      rmc.col.acc = c(1, 3, 4), rmc.col.time = 2, 
                       rmc.unit.acc = "g", rmc.origin = "1970-01-01",
                       rmc.headername.sn = "serial_number",
                       rmc.headername.recordingid = "ID",
@@ -429,10 +429,10 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
     
     # check that g.inspectfile() correctly reads the sf value from the header
     I = g.inspectfile(csvData[[1]],
-                      rmc.dec=".", rmc.headername.sf = "sample_freq",
-                      rmc.unit.time="POSIX",
-                      rmc.firstrow.acc = 11, rmc.firstrow.header=1,
-                      rmc.col.acc = c(1,3,4), rmc.col.time=2,
+                      rmc.dec = ".", rmc.headername.sf = "sample_freq", 
+                      rmc.unit.time = "POSIX", 
+                      rmc.firstrow.acc = 11, rmc.firstrow.header = 1, 
+                      rmc.col.acc = c(1, 3, 4), rmc.col.time = 2, 
                       rmc.unit.acc = "g", rmc.origin = "1970-01-01",
                       rmc.header.structure = csvData[[2]])
     expect_equal(I$sf, 40)
@@ -446,6 +446,6 @@ test_that("g.readaccfile and g.inspectfile can read movisens, gt3x, cwa, Axivity
   #also test one small other function:
   datadir  = system.file("testfiles", package = "GGIR")[1]
   fnames = datadir2fnames(datadir = datadir, filelist = FALSE)
-  expect_equal(length(fnames$fnames), 8)
-  expect_equal(length(fnames$fnamesfull), 8)
+  expect_equal(length(fnames$fnames), 9)
+  expect_equal(length(fnames$fnamesfull), 9)
 })
