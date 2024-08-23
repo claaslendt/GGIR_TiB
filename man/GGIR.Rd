@@ -246,16 +246,17 @@ GGIR(mode = 1:5,
         Character (default = "raw").
         To indicate what the format is of the data in datadir.
         Alternatives: ukbiobank_csv, actiwatch_csv, actiwatch_awd, 
-        actigraph_csv, and sensewear_xls, which correspond to epoch level data 
+        actigraph_csv, sensewear_xls, and ami_csv, which correspond to epoch level data 
         files from, respecitively, UK Biobank in csv format, Actiwatch in csv 
-        format, Actiwatch in awd format, ActiGraph csv format, and Sensewear in
-        xls format (also works with xlsx). Here, the assumed epoch size for
-        UK Biobank csvdata is 5 seconds. 
+        format, Actiwatch in awd format, ActiGraph csv format, Sensewear in
+        xls format (also works with xlsx), and AMI Motionlogger. Here, the assumed 
+        epoch size for UK Biobank csvdata is 5 seconds. 
         The epoch size for the other non-raw data formats is 
         flexible, but make sure that you set first value of argument 
         \code{windowsizes} accordingly. Also when working with 
         non-raw data formats specify argument \code{extEpochData_timeformat} as
-        documented below. For ukbiobank_csv nonwear is a column in the data itself,
+        documented below. For ukbiobank_csv and ami_csv nonwear is a column in the
+        data itself,
         for actiwatch_csv, actiwatch_awd, actigraph_csv, and sensewear_xls non-wear 
         is detected as 60 minute rolling zeros. The length of this window can be 
         modified with the third value of argument \code{windowsizes} expressed in
@@ -1706,6 +1707,23 @@ GGIR(mode = 1:5,
             HASPT.algo = "NotWorn",
             desiredtz = "America/New_York",
             overwrite = TRUE,
+            do.report = c(2, 4, 5),
+            visualreport = FALSE)
+            
+        # For externally derived AMI data in .csv format:  
+        GGIR(datadir = "C:/youramidatafolder",
+            outputdir = "D:/youroutputfolder",
+            mode = 1:5,
+            windowsizes = c(60, 900, 3600),
+            threshold.in = 1.5,
+            threshold.mod = 3,
+            threshold.vig = 6,
+            dataFormat = "ami_csv",
+            extEpochData_timeformat = "\%m/\%d/\%Y \%H:\%M:\%S",
+            HASPT.algo = "NotWorn",
+            desiredtz = "America/New_York",
+            overwrite = TRUE,
+            acc.metric = "ExtAct",
             do.report = c(2, 4, 5),
             visualreport = FALSE)
            

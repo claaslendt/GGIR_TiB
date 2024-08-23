@@ -83,6 +83,26 @@ GGIR(datadir = "C:/yoursenseweardatafolder",
     HASPT.algo = "NotWorn")
 ```
 
+## AMI data in .csv format
+
+```
+GGIR(datadir = "C:/youramidatafolder",
+            outputdir = "D:/youroutputfolder",
+            mode = 1:5,
+            windowsizes = c(60, 900, 3600),
+            threshold.in = 1.5,
+            threshold.mod = 3,
+            threshold.vig = 6,
+            dataFormat = "ami_csv",
+            extEpochData_timeformat = "\%m/\%d/\%Y \%H:\%M:\%S",
+            HASPT.algo = "NotWorn",
+            overwrite = TRUE,
+            acc.metric = "ExtAct",
+            do.report = c(2, 4, 5),
+            visualreport = FALSE)
+```
+
+
 # Handling study protocol
 
 ## Not worn during night

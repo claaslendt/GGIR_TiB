@@ -2,6 +2,7 @@ library(GGIR)
 context("convertEpochData")
 test_that("External epoch data is correctly converted", {
   skip_on_cran()
+  
   params_general = load_params()$params_general
   params_general[["overwrite"]] = TRUE
   params_general[["extEpochData_timeformat"]] = "%d/%m/%Y %H:%M:%S"
@@ -53,7 +54,7 @@ test_that("External epoch data is correctly converted", {
   params_general[["dataFormat"]] = "actiwatch_csv"
   params_general[["extEpochData_timeformat"]] = "%d-%m-%Y %H:%M:%S"
   expect_error(convertEpochData(datadir = dn, metadatadir = "./output_tmp_testdata",
-               params_general = params_general))
+                                params_general = params_general))
   params_general[["extEpochData_timeformat"]] = "%d/%m/%Y %H:%M:%S"
   convertEpochData(datadir = dn, metadatadir = "./output_tmp_testdata",
                    params_general = params_general)
@@ -63,7 +64,7 @@ test_that("External epoch data is correctly converted", {
   expect_equal(nrow(M$metashort), 860)
   expect_equal(ncol(M$metashort), 2)
   expect_equal(colnames(M$metashort), c("timestamp", "ZCY"))
-
+  
   # Tidy up by deleting output folder
   if (file.exists(outputdir)) unlink(outputdir, recursive = TRUE)
   
@@ -80,7 +81,7 @@ test_that("External epoch data is correctly converted", {
   expect_equal(nrow(M$metashort), 492)
   expect_equal(ncol(M$metashort), 2)
   expect_equal(colnames(M$metashort), c("timestamp", "LFENMO"))
-
+  
   # Tidy up by deleting output folder
   if (file.exists(outputdir)) unlink(outputdir, recursive = TRUE)
   
@@ -97,7 +98,7 @@ test_that("External epoch data is correctly converted", {
   expect_equal(sum(M$metalong$nonwearscore), 165)
   expect_equal(nrow(M$metashort), 984)
   expect_equal(ncol(M$metashort), 5)
-  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y", 
+  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y",
                     "NeishabouriCount_z") %in% colnames(M$metashort)))
   
   # Tidy up by deleting output folder
@@ -116,12 +117,12 @@ test_that("External epoch data is correctly converted", {
   expect_equal(sum(M$metalong$nonwearscore), 291)
   expect_equal(nrow(M$metashort), 988)
   expect_equal(ncol(M$metashort), 5)
-  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y", 
+  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y",
                     "NeishabouriCount_z") %in% colnames(M$metashort)))
   
   # Tidy up by deleting output folder
   if (file.exists(outputdir)) unlink(outputdir, recursive = TRUE)
-
+  
   # ActiGraph with headers
   cat("\nActiGraph with headers")
   move2folder(system.file("testfiles/ActiGraph13_timestamps_headers.csv", package = "GGIR")[1], dn)
@@ -135,13 +136,13 @@ test_that("External epoch data is correctly converted", {
   expect_equal(sum(M$metalong$nonwearscore), 0)
   expect_equal(nrow(M$metashort), 960)
   expect_equal(ncol(M$metashort), 5)
-  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y", 
+  expect_true(all(c("timestamp", "NeishabouriCount_x", "NeishabouriCount_y",
                     "NeishabouriCount_z", "NeishabouriCount_vm") %in% colnames(M$metashort)))
   
   # Tidy up by deleting output folder
   if (file.exists(outputdir)) unlink(outputdir, recursive = TRUE)
   
-
+  
   # Sensewear
   cat("\nSensewear")
   move2folder(system.file("testfiles/sensewear.xls", package = "GGIR")[1], dn)
@@ -159,6 +160,24 @@ test_that("External epoch data is correctly converted", {
   expect_equal(ncol(M$metashort), 4)
   expect_true(all(c("timestamp", "ExtAct", "ExtStep",
                     "ExtSleep") %in% colnames(M$metashort)))
+  
+  
+  # AMI
+  cat("\nAMI")
+  move2folder(system.file("testfiles/AMI.csv", package = "GGIR")[1], dn)
+  params_general[["windowsizes"]][1] = 60
+  params_general[["windowsizes"]][2] = 900
+  params_general[["windowsizes"]][3] = 3600
+  params_general[["dataFormat"]] = "ami_csv"
+  params_general[["extEpochData_timeformat"]] = "%m/%d/%Y %H:%M:%S"
+  convertEpochData(datadir = dn, metadatadir = "./output_tmp_testdata",
+                   params_general = params_general)
+  if (dir.exists(dn))  unlink(dn, recursive = TRUE)
+  load(paste0(QCbasis, "/meta_AMI.csv.RData"))
+  expect_equal(sum(M$metalong$nonwearscore), 6)
+  expect_equal(nrow(M$metashort), 990)
+  expect_equal(ncol(M$metashort), 4)
+  expect_true(all(c("timestamp", "ExtAct", "ExtSleep") %in% colnames(M$metashort)))
   
   # Tidy up by deleting output folder
   if (file.exists(outputdir)) unlink(outputdir, recursive = TRUE)

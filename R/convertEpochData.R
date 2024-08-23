@@ -81,6 +81,13 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
     dformc = 98
     dformn = "epochdata"
     sf = 100 # <= EXTRACT FROM FILE?
+  } else if (params_general[["dataFormat"]] == "ami_csv") {
+    deviceName = "AMI"
+    monn = "ami"
+    monc = 97
+    dformc = 99
+    dformn = "epochdata"
+    sf = 100 # <= EXTRACT FROM FILE?
   }
   
   # Before we look inside the epoch files we can already create templates
@@ -195,6 +202,20 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
         D$ExtAct = as.numeric(D$ExtAct)
         D$ExtStep = as.numeric(D$ExtStep)
         D$ExtSleep = as.numeric(D$ExtSleep)
+        epochSize = difftime(timestamp_POSIX[2], timestamp_POSIX[1], 
+                             units = "secs")
+        epSizeShort = as.numeric(epochSize)
+        timestamp_POSIX = timestamp_POSIX[1]
+      } else if (params_general[["dataFormat"]] == "ami_csv") {
+        # read data
+        D = data.table::fread(file = fnames[i], data.table = FALSE)
+        # Convert timestamps
+        timestamp_POSIX = as.POSIXct(paste0(D$Date, " ", D$Time),
+                                     format = params_general[["extEpochData_timeformat"]],
+                                     tz = tz)
+        timestamp_POSIX = as.POSIXct(timestamp_POSIX, tz = tz)
+        D = D[, c("Act", "Sleep", "OffWrist")]
+        colnames(D)[1:2] = c("ExtAct", "ExtSleep")
         epochSize = difftime(timestamp_POSIX[2], timestamp_POSIX[1], 
                              units = "secs")
         epSizeShort = as.numeric(epochSize)
@@ -515,7 +536,8 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
                                             tz = tz)
       time_longEp_8601 = POSIXtime2iso8601(x = as.POSIXlt(time_longEp_num, tz = tz, origin = "1970-01-01"),
                                            tz = tz)
-      if (params_general[["dataFormat"]] %in% c("actigraph_csv", "sensewear_xls") == FALSE) {
+      
+      if (params_general[["dataFormat"]] %in% c("actigraph_csv", "sensewear_xls", "ami_csv") == FALSE) {
         M$metashort = data.frame(timestamp = time_shortEp_8601,
                                  accmetric = D[1:length(time_shortEp_8601),1],stringsAsFactors = FALSE)
       } else {
@@ -544,6 +566,8 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
         imp = unlist(D[, 1])
       } else if (params_general[["dataFormat"]] == "sensewear_xls") {
         imp = unlist(D[, 1])
+      } else if (params_general[["dataFormat"]] == "ami_csv") {
+        imp = unlist(D[, 1])
       }
       navalues = which(is.na(imp) == TRUE)
       if (length(navalues) > 0) imp[navalues] = 1
@@ -554,6 +578,12 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
         imp3 = diff(imp2[seq(1, length(imp2),
                              by = ((60/epSizeShort) * (epSizeLong/60)))]) / ((60/epSizeShort) * (epSizeLong/60)) # rolling mean
         nonwearscore = round(imp3 * 3) # create three level nonwear score from it, not really necessary for GGIR, but helps to retain some of the information
+      } else if (params_general[["dataFormat"]] == "ami_csv") {
+        # AMI comes with its own nonwear detection which we use
+        imp2 = cumsum(D$OffWrist)
+        imp3 = diff(imp2[seq(1, length(imp2),
+                             by = ((60/epSizeShort) * (epSizeLong/60)))]) / ((60/epSizeShort) * (epSizeLong/60)) # rolling mean
+        nonwearscore = ceiling(imp3 * 3) # create three level nonwear score from it
       } else if (length(grep(pattern = "actiwatch", x = params_general[["dataFormat"]], ignore.case = TRUE)) > 0 |
                  params_general[["dataFormat"]] == "actigraph_csv" |
                  params_general[["dataFormat"]] == "sensewear_xls") {
@@ -590,6 +620,19 @@ convertEpochData = function(datadir = c(), metadatadir = c(),
                      aggfunction = NA,
                      timestamp = F, 
                      reporttype = c("scalar", "event", "type"))
+      } else if (params_general[["dataFormat"]] == "ami_csv") {
+        # Create myfun object, this to trigger outcome type specific analysis
+        myfun = list(FUN = NA,
+                     parameters = NA, 
+                     expected_sample_rate = NA, 
+                     expected_unit = "g", 
+                     colnames = c("ExtAct", "ExtSleep"),
+                     outputres = epSizeShort,
+                     minlength = NA,
+                     outputtype = c("numeric", "numeric"),
+                     aggfunction = NA,
+                     timestamp = F, 
+                     reporttype = c("scalar", "type"))
       }
       # create data.frame for metalong, note that light and temperature are just set at zero
       M$metalong = data.frame(timestamp = time_longEp_8601,nonwearscore = nonwearscore, #rep(0,LML)
