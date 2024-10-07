@@ -15,7 +15,7 @@ g.sib.det = function(M, IMP, I, twd = c(-12, 12),
     params_sleep = params$params_sleep
   }
   #==============================================================
-  perc = 10; spt_threshold = 15; sptblocksize = 30; spt_max_gap = 60 # default configurations (keep hardcoded for now
+  perc = 10; spt_threshold = 15; sptblocksize = 30; spt_max_gap = 30 # default configurations (keep hardcoded for now
   # Abbreviaton SPTE = Sleep Period Time Estimate, although in case of HorAngle it is the Time in Bed estimate
   # but then we would have to come up with yet another term to represent the main sleep and/or time in bed window of the day
   # So, out of convenience I keep the object name SPTE. 
